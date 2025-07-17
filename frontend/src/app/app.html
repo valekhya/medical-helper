@@ -1,0 +1,68 @@
+<!-- Simplified Medical Report Section -->
+<div class="report-container" *ngIf="result">
+  <h2>🩺 Your Simplified Medical Report</h2>
+  <p class="subtitle">Here’s a simple explanation of your test results and advice to stay healthy.</p>
+
+  <div class="marker-card" *ngFor="let marker of markerKeys()">
+    <div class="marker-header" [ngClass]="getStatusClass(marker)">
+      <div class="marker-name">{{ marker }}</div>
+      <div class="status-icon">
+        {{ getStatusEmoji(marker) }}
+      </div>
+    </div>
+
+    <p class="explanation">{{ result[marker].explanation }}</p>
+    <p class="suggestion">💡 <strong>Suggestion:</strong> {{ result[marker].suggestion }}</p>
+
+    <div class="response-buttons" role="group">
+      <label>Can you follow this advice?</label>
+      <button class="btn-yes" (click)="requestAlternative(marker)">Yes</button>
+      <button class="btn-no" (click)="requestAlternative(marker, true)">No</button>
+    </div>
+
+    <div class="alternative" *ngIf="altResult[marker]">
+      <p>🟡 <strong>Alternative:</strong> {{ altResult[marker] }}</p>
+    </div>
+  </div>
+
+  <button class="analyze-again-btn" (click)="resetApp()">
+    🔄 Analyze Another Report
+  </button>
+</div>
+
+<!-- PDF Upload Section with Drag & Drop -->
+<div 
+  class="upload-container" 
+  *ngIf="!result"
+  (dragover)="onDragOver($event)" 
+  (dragleave)="onDragLeave($event)" 
+  (drop)="onDrop($event)"
+  [class.drag-over]="isDragOver"
+>
+  <h2>📄 Upload Your Medical Report (PDF)</h2>
+  <p class="greeting-text">
+    Hello! Please upload your medical report in PDF format. We will help you understand it easily.
+  </p>
+
+  <input 
+    type="file" 
+    (change)="onFileSelected($event)" 
+    accept="application/pdf" 
+    id="fileUpload" 
+    hidden 
+  />
+  <label for="fileUpload" class="file-label" tabindex="0">
+    📂 Choose PDF File or Drag it Here
+  </label>
+
+  <button 
+    class="upload-btn" 
+    (click)="uploadFile()" 
+    [disabled]="!selectedFile"
+  >
+    📤 Upload & Analyze
+  </button>
+
+  <div *ngIf="loading" class="loading-text">🔄 Processing your report, please wait...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>
